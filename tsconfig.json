@@ -6,16 +6,36 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
-    "target": "ES2021",
+    "target": "es2022",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "baseUrl": "./src",
     "incremental": true,
     "skipLibCheck": true,
-    "strictNullChecks": false,
-    "noImplicitAny": false,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
     "strictBindCallApply": false,
+    "strictFunctionTypes": true,
     "forceConsistentCasingInFileNames": false,
-    "noFallthroughCasesInSwitch": false
-  }
+    "noFallthroughCasesInSwitch": false,
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    //    "types": ["node"],
+    "strict": true,
+    // включение строгой типизации
+    "esModuleInterop": true,
+    // для корректной работы с модулями
+    "useDefineForClassFields": true,
+    // Требуется для современных классов
+    "resolveJsonModule": true
+    // Для импорта JSON-файлов
+  },
+  "include": [
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
