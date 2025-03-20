@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AbsBaseModelService } from '../common/AbsBaseModelService';
 import { Role } from './role.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { RolesEnum } from '../enums/roles.enum';
 
 @Injectable()
@@ -12,7 +12,7 @@ export class RoleService extends AbsBaseModelService<Role> {
     @InjectRepository(Role)
     private readonly roleRepository: Repository<Role>,
   ) {
-    super(roleRepository);
+    super(roleRepository, Role.name);
   }
 
   protected getRelations(): string[] {
@@ -28,6 +28,10 @@ export class RoleService extends AbsBaseModelService<Role> {
         super.create(candidate);
       }
     }
+  }
+
+  async getRolesByIdList(roleIdList: number[]) {
+    return await this.roleRepository.find({ where: { id: In(roleIdList) } });
   }
 
 
