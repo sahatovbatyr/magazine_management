@@ -1,6 +1,12 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class UserUpdatePasswordDto {
+
+  // @ApiProperty({ example: 'username', description: 'Username' })
+  @IsNumber()
+  @IsNotEmpty()
+  readonly id!: number;
+
   // @ApiProperty({ example: 'username', description: 'Username' })
   @IsString()
   @IsNotEmpty()
