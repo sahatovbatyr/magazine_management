@@ -1,4 +1,10 @@
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { AbsBaseModelService } from '../common/AbsBaseModelService';
 import { User } from './user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -103,51 +109,41 @@ export class UserService extends AbsBaseModelService<User> {
       throw new BadRequestException(`Email ${userDto.email} already exists.`);
     }
     user.email = userDto.email;
-    const res = await this.userRepository.save(user);
+    const res = await this.save(user);
     return res;
   }
 
 
-  async comparePassword(unhashedPassword: string, hashedPassword: string) {
+  async isPasswordValid(unhashedPassword: string, hashedPassword: string) {
     return await bcrypt.compare(unhashedPassword, hashedPassword);
   }
 
-  async updatePassword(userDto: UserUpdatePasswordDto, author: string) {
-    if (author !== userDto.username) {
-      throw new ForbiddenException(
-        'Access Denied. The password can be changed only by the owner.',
-      );
-    }
-    // this.logger.log(`trying updatePassword() for user: ${userDto.username}`);
-
+  async updatePassword(userId: number, userDto: UserUpdatePasswordDto) {
     if (userDto.newPassword != userDto.newPasswordConfirmation) {
       throw new BadRequestException('new Password and confirmation not match.');
     }
 
-    const hashedOldPassword = await bcrypt.hash(userDto.oldPassword, 10);
+    const user = await this.findById_orThrow(userId);
 
-    const user = await this.userRepository.findOne({
-      where: { username: userDto.username },
-    });
-
-    if (!user) {
-      throw new NotFoundException('Username or password are wrong not match.');
+    if (userId != userDto.id || user.username != userDto.username) {
+      throw new UnauthorizedException(
+        'Access Denied. The password can be changed only by the owner.',
+      );
     }
 
     const isPasswordValid = await bcrypt.compare(
-      hashedOldPassword,
+      userDto.oldPassword,
       user.password,
     );
 
-    if (isPasswordValid) {
-      throw new NotFoundException('Username or password are wrong not match.');
+    if (!isPasswordValid) {
+      throw new NotFoundException('Username or password are not match.');
     }
 
     user.password = await bcrypt.hash(userDto.newPassword, 10);
-    await this.userRepository.save(user);
+    await this.save(user);
     // this.logger.log(`User: ${user.username} password changed.`);
     return;
   }
-
 
 }

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { BaseModel } from './BaseModel';
 import { DeepPartial, Repository } from 'typeorm';
 
@@ -50,7 +50,16 @@ export abstract class AbsBaseModelService<T extends BaseModel> {
   }
 
   public async findAll(): Promise<T[]> {
-    return await this.repository.find();
+    return await this.repository.find({ relations: this.getRelations() });
+  }
+
+  protected async save(entity: DeepPartial<T>) {
+    try {
+      return await this.repository.save(entity);
+    } catch (err: any) {
+      throw new InternalServerErrorException(`Error in server. ${err.message}`);
+    }
+
   }
 
 
