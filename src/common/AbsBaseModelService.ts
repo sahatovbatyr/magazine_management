@@ -36,7 +36,10 @@ export abstract class AbsBaseModelService<T extends BaseModel> {
   }
 
   public async findOneByProp(propName: keyof T, propValue: any): Promise<T | null> {
-    return await this.repository.findOne({ where: { [propName]: propValue } } as any);
+    return await this.repository.findOne({
+      where: { [propName]: propValue },
+      relations: this.getRelations(),
+    } as any);
   }
 
   public async findOneByProp_orThrow(propName: keyof T, propValue: any): Promise<T> {
