@@ -1,6 +1,11 @@
-export class TokenDto {
+import { ApiProperty } from '@nestjs/swagger';
 
-  constructor(private token: string) {
+export class TokenDto {
+  @ApiProperty({ example: 'abcxyz', description: 'The access token' })
+  token: string;
+
+  constructor(token: string) {
+    this.token = token;
 
   }
 }
