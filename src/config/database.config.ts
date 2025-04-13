@@ -10,8 +10,8 @@ export const DatabaseConfig = TypeOrmModule.forRootAsync({
   inject: [ConfigService],
   useFactory: async (configService: ConfigService) => ({
     type: 'postgres',
-    host: configService.get(EnvKeysEnum.DB_HOST || 'localhost'),
-    port: Number(configService.get(EnvKeysEnum.DB_PORT)),
+    host: configService.get(EnvKeysEnum.DB_HOST) || 'localhost',
+    port: Number(configService.get(EnvKeysEnum.DB_PORT) || 5432),
     username: configService.get(EnvKeysEnum.DB_USER) || 'postgres',
     password: configService.get(EnvKeysEnum.DB_PASSWORD) || 'postgres',
     database: String(configService.get(EnvKeysEnum.DB_NAME)) || 'postgres',
